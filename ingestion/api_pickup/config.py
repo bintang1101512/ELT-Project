@@ -1,0 +1,9 @@
+API_URL = "https://api.noovoleum.com/api/admin/pickup/getAllPickups"
+ROWS = 50
+SKIP = 0
+PROJECT = "noovoleum-project"
+DATASET = "noovoleum_data_v2"
+TABLE = "raw_api_pickup"
+TABLE_REF = f"{PROJECT}.{DATASET}.{TABLE}"
+MAX_RETRY = 5
+BATCH = 500

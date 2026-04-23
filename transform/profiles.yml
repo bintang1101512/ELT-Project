@@ -1,0 +1,13 @@
+transform:
+  outputs:
+    dev:
+      dataset: noovoleum_data_v2
+      job_execution_timeout_seconds: 300
+      job_retries: 1
+      location: asia-southeast2
+      method: oauth
+      priority: interactive
+      project: noovoleum-project
+      threads: 4
+      type: bigquery
+  target: dev

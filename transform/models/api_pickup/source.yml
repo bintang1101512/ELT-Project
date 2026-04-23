@@ -1,0 +1,9 @@
+version : 2
+
+sources:
+  - name: source
+    database: noovoleum-project
+    schema: noovoleum_data_v2
+    tables:
+      - name: raw_api_pickup
+      
