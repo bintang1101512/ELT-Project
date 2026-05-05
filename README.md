@@ -26,7 +26,7 @@ Looker Studio · Power BI
 
 ## Tech Stack
 
-`Python` `dbt Core` `Google BigQuery` `Docker` `Cloud Run` `Cloud Scheduler` `Artifact Registry` `Pydantic`
+`Python` `dbt Core` `Google BigQuery` `Docker` `Cloud Run` `Cloud Scheduler` `Artifact Registry` 
 
 ---
 
