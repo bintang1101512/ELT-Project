@@ -1,0 +1,13 @@
+transform:
+  outputs:
+    dev:
+      dataset: "{{ env_var('BQ_DATASET', 'your_dataset') }}"
+      job_execution_timeout_seconds: 300
+      job_retries: 1
+      location: asia-southeast2
+      method: oauth
+      priority: interactive
+      project: "{{ env_var('GCP_PROJECT_ID', 'your-gcp-project') }}"
+      threads: 4
+      type: bigquery
+  target: dev

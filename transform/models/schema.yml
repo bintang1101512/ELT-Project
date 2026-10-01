@@ -1,0 +1,85 @@
+version: 2
+
+# Tes kualitas data untuk model staging dan gold.
+# Tes ini sengaja difokuskan pada kunci dan relasi yang dijamin oleh logika SQL
+# (dedup dengan ROW_NUMBER pada kunci, join berbasis kunci yang sama).
+
+models:
+  - name: stg_transaction
+    description: "Staging transaksi box. Satu baris per ta_id (dedup berdasarkan updated_at terbaru)."
+    columns:
+      - name: ta_id
+        description: "ID transaksi (kunci bisnis)."
+        data_tests:
+          - unique
+          - not_null
+      - name: updated_at
+        data_tests:
+          - not_null
+
+  - name: stg_user
+    description: "Staging pengguna per transaksi (hasil UNNEST dari payload). Satu baris per ta_id."
+    columns:
+      - name: ta_id
+        description: "ID transaksi, dipakai sebagai kunci join ke stg_transaction."
+        data_tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_transaction')
+                field: ta_id
+              config:
+                severity: warn
+
+  - name: stg_box_status
+    description: "Staging status box. Satu baris per box_id (dasar snapshot SCD Type 2)."
+    columns:
+      - name: box_id
+        description: "ID box (kunci bisnis)."
+        data_tests:
+          - unique
+          - not_null
+
+  - name: stg_vp
+    description: "Staging konfigurasi partner volume. Satu baris per _id."
+    columns:
+      - name: _id
+        description: "ID konfigurasi partner."
+        data_tests:
+          - unique
+          - not_null
+
+  - name: stg_pickup
+    description: "Staging pickup. Satu baris per pickup_id."
+    columns:
+      - name: pickup_id
+        description: "ID pickup (kunci bisnis)."
+        data_tests:
+          - unique
+          - not_null
+
+  - name: gold_layer
+    description: "Fakta transaksi yang diperkaya atribut box, pengguna, dan partner. Satu baris per ta_id."
+    columns:
+      - name: ta_id
+        description: "ID transaksi (kunci)."
+        data_tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_transaction')
+                field: ta_id
+      - name: ta_start_time_wib
+        description: "Waktu mulai transaksi dalam WIB (Asia/Jakarta)."
+        data_tests:
+          - not_null
+      - name: vp_status
+        description: "Penanda partner volume."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Yes', 'No']
+      - name: duration_minute
+        description: "Durasi transaksi dalam menit (diuji non-negatif lewat tes singular assert_gold_duration_non_negative)."

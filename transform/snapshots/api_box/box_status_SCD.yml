@@ -1,0 +1,12 @@
+snapshots:
+  - name: box_status_SCD
+    relation: ref('stg_box_status')
+    config:
+      schema: snapshots
+      unique_key: box_id
+      strategy: check
+      check_cols:
+        - status
+        - box_error_code
+        - box_error_messages
+      dbt_valid_to_current: "TIMESTAMP('9999-12-31')"

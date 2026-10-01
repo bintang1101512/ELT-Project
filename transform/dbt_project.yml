@@ -1,0 +1,24 @@
+name: 'transform'
+version: '1.0.0'
+
+profile: 'transform'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  transform:
+    api_box:
+      +materialized: incremental
+    api_transaction:
+      +materialized: incremental
+    api_vp:
+      +materialized: incremental

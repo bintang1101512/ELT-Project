@@ -1,0 +1,9 @@
+version : 2
+
+sources:
+  - name: source
+    database: "{{ env_var('GCP_PROJECT_ID', 'your-gcp-project') }}"
+    schema: "{{ env_var('BQ_DATASET', 'your_dataset') }}"
+    tables:
+      - name: raw_api_pickup
+      

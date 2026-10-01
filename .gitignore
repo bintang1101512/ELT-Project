@@ -1,0 +1,10 @@
+.env
+.env.*
+!.env.example
+__pycache__/
+*.pyc
+target/
+dbt_packages/
+logs/
+.user.yml
+.DS_Store
