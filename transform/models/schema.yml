@@ -1,9 +1,5 @@
 version: 2
 
-# Tes kualitas data untuk model staging dan gold.
-# Tes ini sengaja difokuskan pada kunci dan relasi yang dijamin oleh logika SQL
-# (dedup dengan ROW_NUMBER pada kunci, join berbasis kunci yang sama).
-
 models:
   - name: stg_transaction
     description: "Staging transaksi box. Satu baris per ta_id (dedup berdasarkan updated_at terbaru)."

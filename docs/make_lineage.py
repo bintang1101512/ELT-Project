@@ -1,10 +1,3 @@
-"""Gambar lineage dbt dari manifest.json asli (hasil `dbt parse`), gaya monokrom.
-
-Pakai:
-    ~/.venv/bin/python make_lineage.py /tmp/dbt_target/manifest.json lineage.png
-
-Hanya memuat nama model, lapisan, jumlah tes, dan ketergantungan. Tidak ada data bisnis.
-"""
 import json
 import sys
 
@@ -20,7 +13,6 @@ out = sys.argv[2]
 INK, MUTED, LINE, PANEL = '#0F172A', '#475569', '#CBD5E1', '#F1F5F9'
 W, H = 3.3, 0.82
 
-# ---- jumlah tes per model (hanya model pemilik tes) ----
 tests_per = {}
 for n in manifest['nodes'].values():
     if n['resource_type'] == 'test':
@@ -28,7 +20,6 @@ for n in manifest['nodes'].values():
         if owner:
             tests_per[owner] = tests_per.get(owner, 0) + 1
 
-# ---- node ----
 src_label = {'raw_api': 'raw_api_transaction'}
 nodes = {}
 for uid, v in manifest['sources'].items():
@@ -47,9 +38,8 @@ for uid, v in manifest['nodes'].items():
             if dep in nodes:
                 edges.append((dep, uid))
 
-# ---- posisi (x, y) dan tinggi kotak ----
 X_RAW, X_STG, X_GOLD = 0.0, 4.6, 11.4
-SCD_LINE_FRAC = 0.28   # garis ke snapshot keluar dari bagian bawah kotak stg_box_status
+SCD_LINE_FRAC = 0.28
 POS_BY_NAME = {
     'raw_api_transaction': (X_RAW, 5.4),
     'raw_api_box': (X_RAW, 3.2),
@@ -81,20 +71,15 @@ for x, t in [(X_RAW, 'RAW (BigQuery)'), (X_STG, 'STAGING (dbt incremental)'), (X
     ax.text(x + W / 2, 7.35, t, ha='center', va='center', fontsize=12, fontweight='bold', color=INK)
     ax.plot([x - 0.1, x + W + 0.1], [7.1, 7.1], color=INK, lw=1.4)
 
-
 def arrow_head(x2, y2, color=MUTED, lw=1.3):
     ax.add_patch(FancyArrowPatch((x2 - 0.3, y2), (x2, y2), arrowstyle='-|>', mutation_scale=13,
                                  color=color, lw=lw, zorder=2, shrinkA=0, shrinkB=0))
 
-
 def elbow(x1, y1, x2, y2, xm, color=MUTED, lw=1.3):
-    """Garis siku: keluar horizontal, belok vertikal di xm, masuk horizontal ke tujuan."""
     ax.plot([x1, xm, xm, x2 - 0.3], [y1, y1, y2, y2], color=color, lw=lw, solid_capstyle='round', zorder=1)
     arrow_head(x2, y2, color, lw)
 
-
 def straight_with_gaps(x1, y, x2, gaps, color=MUTED, lw=1.3, half=0.12):
-    """Garis lurus dengan celah kecil di titik persilangan (line hop)."""
     xs = [x1]
     for g in sorted(gaps):
         xs += [g - half, g + half]
@@ -103,18 +88,16 @@ def straight_with_gaps(x1, y, x2, gaps, color=MUTED, lw=1.3, half=0.12):
         ax.plot([xs[i], xs[i + 1]], [y, y], color=color, lw=lw, solid_capstyle='round', zorder=1)
     arrow_head(x2, y, color, lw)
 
-
 GOLD_SRC = ['stg_transaction', 'stg_user', 'stg_box_status', 'stg_vp']
 LANE0, LANE_STEP = 0.45, 0.4
 lane_x = {nm: X_STG + W + LANE0 + LANE_STEP * i for i, nm in enumerate(GOLD_SRC)}
 gold_uid = by_name['gold_layer']
 
-# rencana garis ke gold: (y awal, y akhir, x jalur vertikal)
 gold_plan = {}
 for i, nm in enumerate(GOLD_SRC):
     ys = pos[by_name[nm]][1] + H / 2
     if nm == 'stg_box_status':
-        ys = pos[by_name[nm]][1] + H * 0.74   # bagian atas kotak, terpisah dari garis ke snapshot
+        ys = pos[by_name[nm]][1] + H * 0.74
     ye = pos[gold_uid][1] + hgt[gold_uid] * (0.88 - 0.76 * i / (len(GOLD_SRC) - 1))
     gold_plan[nm] = (ys, ye, lane_x[nm])
 
